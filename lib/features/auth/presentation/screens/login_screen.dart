@@ -1,17 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../widgets/premium_button.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/social_auth_buttons.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!), backgroundColor: AppTheme.error),
+        );
+      }
+      if (next.user != null) {
+        // Navigate to dashboard
+        // context.go('/dashboard');
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -21,7 +52,6 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 60),
-              // App Logo/Brand
               Center(
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -57,15 +87,16 @@ class LoginScreen extends StatelessWidget {
               
               const SizedBox(height: 40),
               
-              // Form fields
-              const AuthTextField(
+              AuthTextField(
+                controller: _emailController,
                 hintText: 'Student ID or Email',
                 icon: Iconsax.user,
               ).animate().fadeIn(delay: 400.ms).moveY(begin: 10),
               
               const SizedBox(height: 20),
               
-              const AuthTextField(
+              AuthTextField(
+                controller: _passwordController,
                 hintText: 'Password',
                 icon: Iconsax.lock,
                 isPassword: true,
@@ -86,10 +117,18 @@ class LoginScreen extends StatelessWidget {
               
               const SizedBox(height: 32),
               
-              PremiumButton(
-                text: 'Sign In',
-                onPressed: () {},
-              ).animate().fadeIn(delay: 700.ms).scale(),
+              if (authState.isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                PremiumButton(
+                  text: 'Sign In',
+                  onPressed: () {
+                    ref.read(authProvider.notifier).login(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
+                  },
+                ).animate().fadeIn(delay: 700.ms).scale(),
               
               const SizedBox(height: 40),
               
