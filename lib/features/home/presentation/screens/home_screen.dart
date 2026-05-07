@@ -4,7 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../../../core/theme/app_theme.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/timetable_card.dart';
 import '../widgets/stats_card.dart';
 
@@ -63,8 +64,12 @@ class HomeScreen extends ConsumerWidget {
              icon: const Icon(Iconsax.notification, color: AppTheme.textPrimary),
            ),
            IconButton(
-             onPressed: () {},
-             icon: const Icon(Iconsax.profile_circle, color: AppTheme.textPrimary),
+             onPressed: () {
+               ref.read(authProvider.notifier).logout();
+               context.go('/login');
+             },
+             icon: const Icon(Iconsax.logout, color: AppTheme.textPrimary),
+             tooltip: 'Logout',
            ),
            // Debug: direct link to login (visible only in dev mode)
            if (kDebugMode)
@@ -216,7 +221,9 @@ class HomeScreen extends ConsumerWidget {
         ],
         currentIndex: 0,
         onTap: (index) {
-          // TODO: Implement navigation logic
+          if (index == 3) {
+            context.pushNamed('profile');
+          }
         },
       ),
       // floatingActionButton removed as requested

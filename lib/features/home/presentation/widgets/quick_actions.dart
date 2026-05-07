@@ -14,7 +14,6 @@ class QuickActions extends StatelessWidget {
       {'icon': Iconsax.document_text, 'label': 'Assignments', 'color': AppTheme.secondary},
       {'icon': Iconsax.note, 'label': 'Notes', 'color': const Color(0xFFF59E0B)},
       {'icon': Iconsax.user, 'label': 'Profile', 'color': AppTheme.accent},
-      {'icon': Iconsax.setting, 'label': 'Settings', 'color': AppTheme.textSecondary},
     ];
 
     return Container(
