@@ -191,17 +191,35 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-            bottomNavigationBar: const SizedBox.shrink(),
-      floatingActionButton: FloatingActionButton.extended(
-
-        onPressed: () {},
-        backgroundColor: AppTheme.primary,
-        icon: const Icon(Iconsax.calendar, color: Colors.white),
-        label: const Text(
-          'View Timetable',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppTheme.primary,
+        unselectedItemColor: AppTheme.textSecondary,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.notification),
+            label: 'Alerts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.calendar),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.profile_circle),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: 0,
+        onTap: (index) {
+          // TODO: Implement navigation logic
+        },
       ),
+      // floatingActionButton removed as requested
     );
   }
 }
