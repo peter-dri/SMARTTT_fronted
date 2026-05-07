@@ -11,8 +11,19 @@ void main() {
   );
 }
 
+/// Kept for compatibility with the widget test.
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SmartApp();
+  }
+}
+
 class SmartApp extends StatelessWidget {
   const SmartApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {

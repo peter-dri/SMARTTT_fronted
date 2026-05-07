@@ -43,17 +43,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    ref.listen(authProvider, (previous, next) {
-      if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!), backgroundColor: AppTheme.error),
-        );
-      }
-      if (next.user != null) {
-        // Navigate to dashboard
-        // context.go('/dashboard');
-      }
-    });
+     ref.listen(authProvider, (previous, next) {
+       if (next.error != null) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text(next.error!), backgroundColor: AppTheme.error),
+         );
+       }
+       if (next.user != null) {
+         context.go('/home');
+       }
+     });
 
     return Scaffold(
       backgroundColor: AppTheme.background,
