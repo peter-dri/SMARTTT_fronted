@@ -18,15 +18,15 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
-
-  AuthNotifier(this._repository) : super(AuthState());
+class AuthNotifier extends Notifier<AuthState> {
+  @override
+  AuthState build() => AuthState();
 
   Future<void> login(String email, String password) async {
+    final repository = ref.read(authRepositoryProvider);
     state = state.copyWith(isLoading: true);
     try {
-      final user = await _repository.login(email, password);
+      final user = await repository.login(email, password);
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
@@ -42,9 +42,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String department,
     required int yearOfStudy,
   }) async {
+    final repository = ref.read(authRepositoryProvider);
     state = state.copyWith(isLoading: true);
     try {
-      final user = await _repository.register(
+      final user = await repository.register(
         fullName: fullName,
         email: email,
         password: password,
@@ -60,13 +61,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await _repository.logout();
+    final repository = ref.read(authRepositoryProvider);
+    await repository.logout();
     state = AuthState();
   }
 }
 
 final authRepositoryProvider = Provider((ref) => AuthRepository());
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
-});
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);

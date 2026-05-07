@@ -31,17 +31,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    ref.listen(authProvider, (previous, next) {
-      if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!), backgroundColor: AppTheme.error),
-        );
-      }
-      if (next.user != null) {
-        // Navigate to dashboard
-        // context.go('/dashboard');
-      }
-    });
+     ref.listen(authProvider, (previous, next) {
+       if (next.error != null) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text(next.error!), backgroundColor: AppTheme.error),
+         );
+       }
+       if (next.user != null) {
+         context.go('/home');
+       }
+     });
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -179,8 +178,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ).animate().fadeIn(delay: 1000.ms),
               
-              const SizedBox(height: 20),
-            ],
+               const SizedBox(height: 20),
+               
+               // Bypass button for development/testing
+               Center(
+                 child: TextButton(
+                   onPressed: () => context.go('/home?bypass=true'),
+                   child: const Text(
+                     'Skip to Home (Dev Bypass)',
+                     style: TextStyle(
+                       color: Colors.grey,
+                       fontSize: 12,
+                       decoration: TextDecoration.underline,
+                     ),
+                   ),
+                 ),
+               ),
+             ],
           ),
         ),
       ),
