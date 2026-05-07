@@ -1,0 +1,160 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../widgets/premium_button.dart';
+import '../widgets/auth_text_field.dart';
+import '../widgets/social_auth_buttons.dart';
+
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(Iconsax.arrow_left_2, color: AppTheme.textPrimary),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppTheme.surface,
+                  padding: const EdgeInsets.all(12),
+                  side: const BorderSide(color: AppTheme.border),
+                ),
+              ),
+              
+              const SizedBox(height: 40),
+              Text(
+                'Create Account',
+                style: Theme.of(context).textTheme.displayLarge,
+              ).animate().fadeIn().moveX(begin: -20),
+              
+              const SizedBox(height: 8),
+              Text(
+                'Join the Smart Timetable Community',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ).animate().fadeIn(delay: 100.ms).moveX(begin: -20),
+              
+              const SizedBox(height: 40),
+              
+              const AuthTextField(
+                hintText: 'Full Name',
+                icon: Iconsax.user,
+              ).animate().fadeIn(delay: 200.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Admission Number',
+                icon: Iconsax.hashtag,
+              ).animate().fadeIn(delay: 250.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Course of Study',
+                icon: Iconsax.teacher,
+              ).animate().fadeIn(delay: 300.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Year of Study (e.g. 1, 2, 3...)',
+                icon: Iconsax.calendar_1,
+              ).animate().fadeIn(delay: 350.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Student Email',
+                icon: Iconsax.sms,
+              ).animate().fadeIn(delay: 400.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Password',
+                icon: Iconsax.lock,
+                isPassword: true,
+              ).animate().fadeIn(delay: 400.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 20),
+              
+              const AuthTextField(
+                hintText: 'Confirm Password',
+                icon: Iconsax.lock_1,
+                isPassword: true,
+              ).animate().fadeIn(delay: 500.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 32),
+              
+              PremiumButton(
+                text: 'Create Account',
+                onPressed: () {},
+              ).animate().fadeIn(delay: 600.ms).scale(),
+              
+              const SizedBox(height: 40),
+              
+              Row(
+                children: [
+                  Expanded(child: Divider(color: AppTheme.border)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'OR REGISTER WITH',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: AppTheme.border)),
+                ],
+              ).animate().fadeIn(delay: 700.ms),
+              
+              const SizedBox(height: 32),
+              
+              const SocialAuthButtons().animate().fadeIn(delay: 800.ms).moveY(begin: 10),
+              
+              const SizedBox(height: 40),
+              
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Already have an account?',
+                      style: TextStyle(color: AppTheme.textSecondary),
+                    ),
+                    TextButton(
+                      onPressed: () => context.pop(),
+                      child: const Text(
+                        'Sign In',
+                        style: TextStyle(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(delay: 900.ms),
+              
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
