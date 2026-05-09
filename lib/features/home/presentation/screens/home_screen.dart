@@ -4,7 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../../../core/theme/app_theme.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/timetable_card.dart';
 import '../widgets/stats_card.dart';
 import '../../../schedule/presentation/schedule_screen.dart';
@@ -119,6 +120,27 @@ class _HomeTab extends StatelessWidget {
                 tooltip: 'Go to Login (Dev)',
               ),
           ],
+         actions: [
+           IconButton(
+             onPressed: () {},
+             icon: const Icon(Iconsax.notification, color: AppTheme.textPrimary),
+           ),
+           IconButton(
+             onPressed: () {
+               ref.read(authProvider.notifier).logout();
+               context.go('/login');
+             },
+             icon: const Icon(Iconsax.logout, color: AppTheme.textPrimary),
+             tooltip: 'Logout',
+           ),
+           // Debug: direct link to login (visible only in dev mode)
+           if (kDebugMode)
+             IconButton(
+               onPressed: () => context.go('/login'),
+               icon: const Icon(Iconsax.lock, color: Colors.red, size: 20),
+               tooltip: 'Go to Login (Dev)',
+             ),
+         ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -235,6 +257,36 @@ class _HomeTab extends StatelessWidget {
 
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppTheme.primary,
+        unselectedItemColor: AppTheme.textSecondary,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.notification),
+            label: 'Alerts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.calendar),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.profile_circle),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 3) {
+            context.pushNamed('profile');
+          }
+        },
       ),
       // floatingActionButton removed as requested
     );

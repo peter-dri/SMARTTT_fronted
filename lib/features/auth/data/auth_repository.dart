@@ -67,4 +67,26 @@ class AuthRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
   }
+
+  Future<UserModel> updateProfile({
+    required String fullName,
+    required String admissionNumber,
+    required String course,
+    required String department,
+    required int yearOfStudy,
+  }) async {
+    try {
+      final response = await apiClient.dio.patch('auth/profile/update/', data: {
+        'full_name': fullName,
+        'admission_number': admissionNumber,
+        'course': course,
+        'department': department,
+        'year_of_study': yearOfStudy,
+      });
+
+      return UserModel.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
