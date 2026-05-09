@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/schedule/presentation/schedule_screen.dart';
 
 // Dev bypass: auto-redirect from login to home in debug mode
 const bool kDevBypassAuth = kDebugMode;
@@ -31,6 +32,11 @@ final appRouter = GoRouter(
       path: '/home',
       name: 'home',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/schedule',
+      name: 'schedule',
+      builder: (context, state) => const ScheduleScreen(),
     ),
   ],
   redirect: (context, state) {
