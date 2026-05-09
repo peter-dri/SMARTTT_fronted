@@ -8,13 +8,58 @@ import '../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../widgets/timetable_card.dart';
 import '../widgets/stats_card.dart';
+import '../../../schedule/presentation/schedule_screen.dart';
 
-
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  static final List<Widget> _screens = [
+    _HomeTab(),
+    ScheduleScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppTheme.primary,
+        unselectedItemColor: AppTheme.textSecondary,
+        showUnselectedLabels: true,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.calendar),
+            label: 'Schedule',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     final currentTime = DateTime.now();
     String greeting = 'Good morning';
     if (currentTime.hour >= 12 && currentTime.hour < 16) {
@@ -58,6 +103,23 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
+          actions: [
+            IconButton(
+              onPressed: null,
+              icon: const Icon(Iconsax.notification, color: AppTheme.textSecondary),
+            ),
+            IconButton(
+              onPressed: null,
+              icon: const Icon(Iconsax.profile_circle, color: AppTheme.textSecondary),
+            ),
+            // Debug: direct link to login (visible only in dev mode)
+            if (kDebugMode)
+              IconButton(
+                onPressed: () => context.go('/login'),
+                icon: const Icon(Iconsax.lock, color: Colors.red, size: 20),
+                tooltip: 'Go to Login (Dev)',
+              ),
+          ],
          actions: [
            IconButton(
              onPressed: () {},
