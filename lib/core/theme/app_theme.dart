@@ -105,4 +105,11 @@ class AppTheme {
   static Color getTextPrimary(BuildContext context) => Theme.of(context).textTheme.bodyLarge!.color!;
   static Color getTextSecondary(BuildContext context) => Theme.of(context).textTheme.bodyMedium!.color!;
   static Color getBorder(BuildContext context) => Theme.of(context).brightness == Brightness.light ? borderLight : borderDark;
+
+  // Static constants for convenience (defaults to light theme)
+  static const Color background = bgLight;
+  static const Color surface = surfaceLight;
+  static const Color textPrimary = textPrimaryLight;
+  static const Color textSecondary = textSecondaryLight;
+  static const Color border = borderLight;
 }

@@ -4,11 +4,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../widgets/timetable_card.dart';
 import '../widgets/stats_card.dart';
 import '../../../schedule/presentation/schedule_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,9 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _screens = [
-    _HomeTab(),
-    ScheduleScreen(),
+  List<Widget> get _screens => [
+    _HomeTab(
+      onViewSchedule: () => _onItemTapped(1),
+    ),
+    const ScheduleScreen(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -51,15 +55,23 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Iconsax.calendar),
             label: 'Schedule',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.profile_circle),
+            label: 'Profile',
+          ),
         ],
       ),
     );
   }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends ConsumerWidget {
+  final VoidCallback onViewSchedule;
+
+  const _HomeTab({super.key, required this.onViewSchedule});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final currentTime = DateTime.now();
     String greeting = 'Good morning';
     if (currentTime.hour >= 12 && currentTime.hour < 16) {
@@ -105,42 +117,12 @@ class _HomeTab extends StatelessWidget {
         ),
           actions: [
             IconButton(
-              onPressed: null,
-              icon: const Icon(Iconsax.notification, color: AppTheme.textSecondary),
+              onPressed: () {
+                context.pushNamed('alerts');
+              },
+              icon: const Icon(Iconsax.notification, color: AppTheme.textPrimary),
             ),
-            IconButton(
-              onPressed: null,
-              icon: const Icon(Iconsax.profile_circle, color: AppTheme.textSecondary),
-            ),
-            // Debug: direct link to login (visible only in dev mode)
-            if (kDebugMode)
-              IconButton(
-                onPressed: () => context.go('/login'),
-                icon: const Icon(Iconsax.lock, color: Colors.red, size: 20),
-                tooltip: 'Go to Login (Dev)',
-              ),
           ],
-         actions: [
-           IconButton(
-             onPressed: () {},
-             icon: const Icon(Iconsax.notification, color: AppTheme.textPrimary),
-           ),
-           IconButton(
-             onPressed: () {
-               ref.read(authProvider.notifier).logout();
-               context.go('/login');
-             },
-             icon: const Icon(Iconsax.logout, color: AppTheme.textPrimary),
-             tooltip: 'Logout',
-           ),
-           // Debug: direct link to login (visible only in dev mode)
-           if (kDebugMode)
-             IconButton(
-               onPressed: () => context.go('/login'),
-               icon: const Icon(Iconsax.lock, color: Colors.red, size: 20),
-               tooltip: 'Go to Login (Dev)',
-             ),
-         ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -193,7 +175,7 @@ class _HomeTab extends StatelessWidget {
                       ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: onViewSchedule,
                   child: const Text(
                     'View All',
                     style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600),
@@ -258,37 +240,6 @@ class _HomeTab extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppTheme.primary,
-        unselectedItemColor: AppTheme.textSecondary,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.notification),
-            label: 'Alerts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.calendar),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.profile_circle),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 3) {
-            context.pushNamed('profile');
-          }
-        },
-      ),
-      // floatingActionButton removed as requested
     );
   }
 }
