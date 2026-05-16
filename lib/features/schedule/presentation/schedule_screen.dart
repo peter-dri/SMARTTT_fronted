@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({Key? key}) : super(key: key);
+  const ScheduleScreen({super.key});
 
   @override
   State<ScheduleScreen> createState() => _ScheduleScreenState();
@@ -91,7 +91,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               borderRadius: BorderRadius.circular(isSmallScreen ? 20.0 : 24.0),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),

@@ -46,7 +46,7 @@ class ProfileScreen extends ConsumerWidget {
                         height: 110,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.primary.withOpacity(0.1),
+                          color: AppTheme.primary.withValues(alpha: 0.1),
                           border: Border.all(color: AppTheme.primary, width: 2),
                         ),
                         child: const Icon(Iconsax.user, size: 50, color: AppTheme.primary),
@@ -216,7 +216,7 @@ class ProfileScreen extends ConsumerWidget {
           Icon(icon, size: 20, color: AppTheme.getTextSecondary(context)),
           const SizedBox(width: 16),
           Expanded(child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500))),
-          Switch.adaptive(value: value, onChanged: onChanged, activeColor: AppTheme.primary),
+          Switch.adaptive(value: value, onChanged: onChanged, activeThumbColor: AppTheme.primary),
         ],
       ),
     );
@@ -236,7 +236,7 @@ class ProfileScreen extends ConsumerWidget {
             Expanded(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: color))),
             if (value != null) Text(value, style: TextStyle(fontSize: 14, color: AppTheme.getTextSecondary(context))),
             const SizedBox(width: 8),
-            Icon(Iconsax.arrow_right_3, size: 14, color: AppTheme.getTextSecondary(context).withOpacity(0.5)),
+            Icon(Iconsax.arrow_right_3, size: 14, color: AppTheme.getTextSecondary(context).withValues(alpha: 0.5)),
           ],
         ),
       ),

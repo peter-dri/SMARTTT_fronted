@@ -21,6 +21,14 @@ class AppTheme {
   static const Color textSecondaryDark = Color(0xFF94A3B8);
   static const Color borderDark = Color(0xFF334155);
 
+  // Convenience aliases used throughout the UI.
+  // Note: these are light-theme defaults so they can be used in const widgets.
+  static const Color background = bgLight;
+  static const Color surface = surfaceLight;
+  static const Color textPrimary = textPrimaryLight;
+  static const Color textSecondary = textSecondaryLight;
+  static const Color border = borderLight;
+
   static ThemeData lightTheme = _buildTheme(
     brightness: Brightness.light,
     bg: bgLight,

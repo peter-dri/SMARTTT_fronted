@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiClient {
   final Dio dio = Dio(
     BaseOptions(
-      baseUrl: 'http://your-django-api-url.com/api/', // Replace with your actual backend URL
+      baseUrl: 'http://localhost:8000/api/v1/',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -21,7 +21,7 @@ class ApiClient {
           final prefs = await SharedPreferences.getInstance();
           final token = prefs.getString('auth_token');
           if (token != null) {
-            options.headers['Authorization'] = 'Token $token';
+            options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
         },

@@ -61,7 +61,8 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await _repository.logout();
+    final repository = ref.read(authRepositoryProvider);
+    await repository.logout();
     state = AuthState();
   }
 
@@ -72,9 +73,10 @@ class AuthNotifier extends Notifier<AuthState> {
     required String department,
     required int yearOfStudy,
   }) async {
+    final repository = ref.read(authRepositoryProvider);
     state = state.copyWith(isLoading: true);
     try {
-      final user = await _repository.updateProfile(
+      final user = await repository.updateProfile(
         fullName: fullName,
         admissionNumber: admissionNumber,
         course: course,

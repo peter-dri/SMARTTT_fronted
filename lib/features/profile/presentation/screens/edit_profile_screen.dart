@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/auth_text_field.dart';
 import '../../../../widgets/premium_button.dart';
@@ -90,6 +89,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               PremiumButton(
                 text: 'Save Changes',
                 onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final router = GoRouter.of(context);
                   await ref.read(authProvider.notifier).updateProfile(
                         fullName: _nameController.text,
                         admissionNumber: _admissionController.text,
@@ -97,11 +98,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         department: _departmentController.text,
                         yearOfStudy: int.tryParse(_yearController.text) ?? 1,
                       );
-                  if (mounted && ref.read(authProvider).error == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (!mounted) return;
+
+                  if (ref.read(authProvider).error == null) {
+                    messenger.showSnackBar(
                       const SnackBar(content: Text('Profile updated successfully!')),
                     );
-                    context.pop();
+                    router.pop();
                   }
                 },
               ),
