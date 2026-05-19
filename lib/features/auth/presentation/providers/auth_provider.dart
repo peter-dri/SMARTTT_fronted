@@ -20,7 +20,21 @@ class AuthState {
 
 class AuthNotifier extends Notifier<AuthState> {
   @override
-  AuthState build() => AuthState();
+  AuthState build() {
+    Future.microtask(() => checkAuth());
+    return AuthState();
+  }
+
+  Future<void> checkAuth() async {
+    final repository = ref.read(authRepositoryProvider);
+    state = state.copyWith(isLoading: true);
+    try {
+      final user = await repository.fetchProfile();
+      state = AuthState(user: user, isLoading: false);
+    } catch (e) {
+      state = AuthState(isLoading: false);
+    }
+  }
 
   Future<void> login(String email, String password) async {
     final repository = ref.read(authRepositoryProvider);

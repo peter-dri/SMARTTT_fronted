@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiClient {
   final Dio dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.69:8000/api/v1/', // Pointing to local Django server
+      baseUrl: 'http://localhost:8000/api/v1/', // Pointing to local Django server (run 'adb reverse tcp:8000 tcp:8000' for physical devices)
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {

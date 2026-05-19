@@ -10,16 +10,27 @@ import '../widgets/timetable_card.dart';
 import '../widgets/stats_card.dart';
 import '../../../schedule/presentation/schedule_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
+import '../../../schedule/presentation/providers/timetable_provider.dart';
+import '../../../schedule/domain/models/timetable_session_model.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch timetable sessions and current active term on startup
+    Future.microtask(() {
+      ref.read(timetableProvider.notifier).fetchActiveTermAndSchedule();
+    });
+  }
 
   List<Widget> get _screens => [
     _HomeTab(
@@ -42,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppTheme.primary,
-        unselectedItemColor: AppTheme.textSecondary,
+        unselectedItemColor: AppTheme.getTextSecondary(context),
+        backgroundColor: AppTheme.getSurface(context),
         showUnselectedLabels: true,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -72,6 +84,10 @@ class _HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final timetableState = ref.watch(timetableProvider);
+    final user = authState.user;
+
     final currentTime = DateTime.now();
     String greeting = 'Good morning';
     if (currentTime.hour >= 12 && currentTime.hour < 16) {
@@ -80,8 +96,67 @@ class _HomeTab extends ConsumerWidget {
       greeting = 'Good evening';
     }
 
+    final now = DateTime.now();
+    final daysOfWeekMap = {
+      DateTime.monday: 'MON',
+      DateTime.tuesday: 'TUE',
+      DateTime.wednesday: 'WED',
+      DateTime.thursday: 'THU',
+      DateTime.friday: 'FRI',
+      DateTime.saturday: 'SAT',
+      DateTime.sunday: 'SUN',
+    };
+    final currentDayStr = daysOfWeekMap[now.weekday];
+
+    // Filter today's classes
+    final classesToday = timetableState.sessions
+        .where((s) => s.dayOfWeek.toUpperCase() == currentDayStr)
+        .toList();
+
+    // Sort today's classes by start time
+    classesToday.sort((a, b) {
+      try {
+        final aStart = a.timeRange.split('-')[0].trim().split(':');
+        final bStart = b.timeRange.split('-')[0].trim().split(':');
+        final aMin = int.parse(aStart[0]) * 60 + int.parse(aStart[1]);
+        final bMin = int.parse(bStart[0]) * 60 + int.parse(bStart[1]);
+        return aMin.compareTo(bMin);
+      } catch (_) {
+        return 0;
+      }
+    });
+
+    final nowTime = TimeOfDay.fromDateTime(now);
+    final nowMinutes = nowTime.hour * 60 + nowTime.minute;
+
+    int completedCount = 0;
+    int remainingCount = 0;
+    for (final session in classesToday) {
+      try {
+        final parts = session.timeRange.split('-');
+        if (parts.length == 2) {
+          final endParts = parts[1].trim().split(':');
+          final endMinutes = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
+          if (nowMinutes > endMinutes) {
+            completedCount++;
+          } else {
+            remainingCount++;
+          }
+        }
+      } catch (_) {
+        remainingCount++;
+      }
+    }
+
+    final cardColors = const [
+      AppTheme.primary,
+      Color(0xFF10B981),
+      Color(0xFFF59E0B),
+      AppTheme.secondary,
+    ];
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -107,7 +182,7 @@ class _HomeTab extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(
-              'My Timetable',
+              user?.fullName ?? 'Student Name',
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -115,131 +190,202 @@ class _HomeTab extends ConsumerWidget {
             ),
           ],
         ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.pushNamed('alerts');
-              },
-              icon: const Icon(Iconsax.notification, color: AppTheme.textPrimary),
-            ),
-          ],
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.pushNamed('alerts');
+            },
+            icon: Icon(Iconsax.notification, color: AppTheme.getTextPrimary(context)),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Quick Stats Row
-            Row(
-              children: [
-                Expanded(
-                  child: StatsCard(
-                    icon: Iconsax.book,
-                    label: 'Today\'s Classes',
-                    value: '4',
-                    color: AppTheme.primary,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(timetableProvider.notifier).fetchActiveTermAndSchedule();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Quick Stats Row
+              Row(
+                children: [
+                  Expanded(
+                    child: StatsCard(
+                      icon: Iconsax.book,
+                      label: "Today's Classes",
+                      value: '${classesToday.length}',
+                      color: AppTheme.primary,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: StatsCard(
-                    icon: Iconsax.box_tick,
-                    label: 'Completed',
-                    value: '2',
-                    color: const Color(0xFF10B981),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: StatsCard(
+                      icon: Iconsax.box_tick,
+                      label: 'Completed',
+                      value: '$completedCount',
+                      color: const Color(0xFF10B981),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: StatsCard(
-                    icon: Iconsax.clock,
-                    label: 'Remaining',
-                    value: '2',
-                    color: AppTheme.secondary,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: StatsCard(
+                      icon: Iconsax.clock,
+                      label: 'Remaining',
+                      value: '$remainingCount',
+                      color: AppTheme.secondary,
+                    ),
                   ),
-                ),
-              ],
-            ).animate().fadeIn().moveY(begin: 20),
+                ],
+              ).animate().fadeIn().moveY(begin: 20),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // Today's Schedule Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Today's Schedule",
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                TextButton(
-                  onPressed: onViewSchedule,
-                  child: const Text(
-                    'View All',
-                    style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600),
+              // Today's Schedule Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Today's Schedule",
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                ),
-              ],
-            ).animate().fadeIn(delay: 100.ms).moveY(begin: 20),
+                  TextButton(
+                    onPressed: onViewSchedule,
+                    child: const Text(
+                      'View All',
+                      style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ).animate().fadeIn(delay: 100.ms).moveY(begin: 20),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Timetable Cards
-            Column(
-              children: [
-                TimetableCard(
-                  time: '08:00 AM',
-                  subject: 'Mathematics',
-                  instructor: 'Dr. Smith',
-                  location: 'Block A, Room 201',
-                  color: AppTheme.primary,
-                  isCompleted: true,
-                ),
-                TimetableCard(
-                  time: '10:00 AM',
-                  subject: 'Physics Lab',
-                  instructor: 'Prof. Johnson',
-                  location: 'Science Block, Lab 3',
-                  color: const Color(0xFF10B981),
-                  isCompleted: false,
-                  isCurrent: true,
-                ),
-                TimetableCard(
-                  time: '12:00 PM',
-                  subject: 'Lunch Break',
-                  instructor: '-',
-                  location: 'Cafeteria',
-                  color: AppTheme.secondary,
-                  isCompleted: false,
-                  isBreak: true,
-                ),
-                TimetableCard(
-                  time: '02:00 PM',
-                  subject: 'Computer Science',
-                  instructor: 'Ms. Davis',
-                  location: 'IT Block, Room 105',
-                  color: AppTheme.accent,
-                  isCompleted: false,
-                ),
-                TimetableCard(
-                  time: '04:00 PM',
-                  subject: 'Study Group',
-                  instructor: 'Peer Session',
-                  location: 'Library, Zone B',
-                  color: const Color(0xFFF59E0B),
-                  isCompleted: false,
-                ),
-              ],
-            ).animate().fadeIn(delay: 200.ms).moveY(begin: 20),
-
-            const SizedBox(height: 32),
-
-
-          ],
+              // Timetable Cards
+              _buildTodayScheduleSection(
+                timetableState, 
+                classesToday, 
+                nowMinutes, 
+                cardColors
+              ),
+              
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildTodayScheduleSection(
+    TimetableState state, 
+    List<TimetableSessionModel> sessions, 
+    int nowMinutes, 
+    List<Color> cardColors
+  ) {
+    if (state.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (state.error != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppTheme.error.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            const Icon(Iconsax.danger, color: AppTheme.error, size: 36),
+            const SizedBox(height: 12),
+            Text(
+              'Error loading schedule',
+              style: TextStyle(color: AppTheme.error, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              state.error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppTheme.error, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (sessions.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppTheme.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.primary.withOpacity(0.1)),
+        ),
+        child: const Center(
+          child: Column(
+            children: [
+              Icon(Iconsax.coffee, color: AppTheme.primary, size: 36),
+              const SizedBox(height: 12),
+              Text(
+                'No classes scheduled for today',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              Text(
+                'Take a break or review your assignments!',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ).animate().fadeIn(delay: 200.ms).moveY(begin: 20);
+    }
+
+    return Column(
+      children: List.generate(sessions.length, (index) {
+        final session = sessions[index];
+        final cardColor = cardColors[index % cardColors.length];
+
+        bool isCompleted = false;
+        bool isCurrent = false;
+
+        try {
+          final parts = session.timeRange.split('-');
+          if (parts.length == 2) {
+            final startParts = parts[0].trim().split(':');
+            final endParts = parts[1].trim().split(':');
+            final startMinutes = int.parse(startParts[0]) * 60 + int.parse(startParts[1]);
+            final endMinutes = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
+            
+            if (nowMinutes > endMinutes) {
+              isCompleted = true;
+            } else if (nowMinutes >= startMinutes && nowMinutes <= endMinutes) {
+              isCurrent = true;
+            }
+          }
+        } catch (_) {}
+
+        return TimetableCard(
+          time: session.timeRange,
+          subject: session.unitTitle,
+          instructor: session.lecturerName ?? 'No lecturer assigned',
+          location: session.roomName ?? session.roomCode ?? 'TBA',
+          color: cardColor,
+          isCompleted: isCompleted,
+          isCurrent: isCurrent,
+        );
+      }),
+    ).animate().fadeIn(delay: 200.ms).moveY(begin: 20);
   }
 }

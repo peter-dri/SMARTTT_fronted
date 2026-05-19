@@ -68,6 +68,15 @@ class AuthRepository {
     await prefs.remove('auth_token');
   }
 
+  Future<UserModel> fetchProfile() async {
+    try {
+      final response = await apiClient.dio.get('accounts/auth/profile/');
+      return UserModel.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<UserModel> updateProfile({
     required String fullName,
     required String admissionNumber,

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
@@ -57,10 +58,17 @@ final appRouter = GoRouter(
       builder: (context, state) => const AlertsScreen(),
     ),
   ],
-  redirect: (context, state) {
-    // Auto-bypass login in debug mode
-    if (kDevBypassAuth && state.matchedLocation == '/login') {
-      return '/home';
+  redirect: (context, state) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    final isLoggingIn = state.matchedLocation == '/login' ||
+        state.matchedLocation == '/register' ||
+        state.matchedLocation == '/forgot-password';
+
+    if (token == null) {
+      if (!isLoggingIn) return '/login';
+    } else {
+      if (isLoggingIn) return '/home';
     }
     return null;
   },
