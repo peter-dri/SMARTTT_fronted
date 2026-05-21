@@ -43,7 +43,8 @@ class AuthNotifier extends Notifier<AuthState> {
       final user = await repository.login(email, password);
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      final msg = e is Exception ? e.toString().replaceFirst('Exception: ', '') : e.toString();
+      state = state.copyWith(error: msg, isLoading: false);
     }
   }
 
@@ -70,7 +71,8 @@ class AuthNotifier extends Notifier<AuthState> {
       );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+        final msg = e is Exception ? e.toString().replaceFirst('Exception: ', '') : e.toString();
+        state = state.copyWith(error: msg, isLoading: false);
     }
   }
 
@@ -99,7 +101,8 @@ class AuthNotifier extends Notifier<AuthState> {
       );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+        final msg = e is Exception ? e.toString().replaceFirst('Exception: ', '') : e.toString();
+        state = state.copyWith(error: msg, isLoading: false);
     }
   }
 }

@@ -11,14 +11,28 @@ class AuthRepository {
         'password': password,
       });
 
-      final token = response.data['token'];
-      final userData = response.data['user'];
+      final userData = _extractUserData(response.data);
+      final token = response.data is Map ? response.data['token'] : null;
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+      if (token != null) {
+        await prefs.setString('auth_token', token.toString());
+      }
 
       return UserModel.fromJson(userData);
     } catch (e) {
+      if (e is DioException) {
+        final data = e.response?.data;
+        if (data is Map && data.isNotEmpty) {
+          if (data.containsKey('detail')) throw Exception(data['detail'].toString());
+          if (data.containsKey('message')) throw Exception(data['message'].toString());
+          // Flatten field errors like {"email": ["..."]}
+          final first = data.values.first;
+          if (first is List && first.isNotEmpty) throw Exception(first.first.toString());
+          throw Exception(data.toString());
+        }
+        throw Exception(e.message ?? 'Network error');
+      }
       rethrow;
     }
   }
@@ -43,14 +57,27 @@ class AuthRepository {
         'year_of_study': yearOfStudy,
       });
 
-      final token = response.data['token'];
-      final userData = response.data['user'];
+      final userData = _extractUserData(response.data);
+      final token = response.data is Map ? response.data['token'] : null;
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+      if (token != null) {
+        await prefs.setString('auth_token', token.toString());
+      }
 
       return UserModel.fromJson(userData);
     } catch (e) {
+      if (e is DioException) {
+        final data = e.response?.data;
+        if (data is Map && data.isNotEmpty) {
+          if (data.containsKey('detail')) throw Exception(data['detail'].toString());
+          if (data.containsKey('message')) throw Exception(data['message'].toString());
+          final first = data.values.first;
+          if (first is List && first.isNotEmpty) throw Exception(first.first.toString());
+          throw Exception(data.toString());
+        }
+        throw Exception(e.message ?? 'Network error');
+      }
       rethrow;
     }
   }
@@ -71,7 +98,7 @@ class AuthRepository {
   Future<UserModel> fetchProfile() async {
     try {
       final response = await apiClient.dio.get('accounts/auth/profile/');
-      return UserModel.fromJson(response.data);
+      return UserModel.fromJson(_extractUserData(response.data));
     } catch (e) {
       rethrow;
     }
@@ -93,9 +120,36 @@ class AuthRepository {
         'year_of_study': yearOfStudy,
       });
 
-      return UserModel.fromJson(response.data);
+      return UserModel.fromJson(_extractUserData(response.data));
     } catch (e) {
       rethrow;
     }
+  }
+
+  Map<String, dynamic> _extractUserData(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final user = data['user'];
+      if (user is Map<String, dynamic>) {
+        return user;
+      }
+
+      if (data.containsKey('id') || data.containsKey('email') || data.containsKey('full_name')) {
+        return data;
+      }
+    }
+
+    if (data is Map) {
+      final map = Map<String, dynamic>.from(data);
+      final user = map['user'];
+      if (user is Map) {
+        return Map<String, dynamic>.from(user);
+      }
+
+      if (map.containsKey('id') || map.containsKey('email') || map.containsKey('full_name')) {
+        return map;
+      }
+    }
+
+    throw Exception('Invalid user response');
   }
 }
