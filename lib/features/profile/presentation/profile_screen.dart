@@ -1,15 +1,3 @@
-import 'package:flutter/material.dart';
-
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Profile Screen',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
+// This file is intentionally left as a re-export for compatibility.
+// The real ProfileScreen implementation is in screens/profile_screen.dart
+export 'screens/profile_screen.dart';
