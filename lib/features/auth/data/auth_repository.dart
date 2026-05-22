@@ -5,22 +5,18 @@ import '../domain/models/user_model.dart';
 
 class AuthRepository {
   Future<UserModel> login(String email, String password) async {
-    try {
-      final response = await apiClient.dio.post('accounts/auth/login/', data: {
-        'email': email,
-        'password': password,
-      });
+    final response = await apiClient.dio.post('accounts/auth/login/', data: {
+      'email': email,
+      'password': password,
+    });
 
-      final token = response.data['token'];
-      final userData = response.data['user'];
+    final token = response.data['token'];
+    final userData = response.data['user'];
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
 
-      return UserModel.fromJson(userData);
-    } catch (e) {
-      rethrow;
-    }
+    return UserModel.fromJson(userData);
   }
 
   Future<UserModel> register({
@@ -32,35 +28,27 @@ class AuthRepository {
     required String department,
     required int yearOfStudy,
   }) async {
-    try {
-      final response = await apiClient.dio.post('accounts/auth/register/', data: {
-        'full_name': fullName,
-        'email': email,
-        'password': password,
-        'admission_number': admissionNumber,
-        'course': course,
-        'department': department,
-        'year_of_study': yearOfStudy,
-      });
+    final response = await apiClient.dio.post('accounts/auth/register/', data: {
+      'full_name': fullName,
+      'email': email,
+      'password': password,
+      'admission_number': admissionNumber,
+      'course': course,
+      'department': department,
+      'year_of_study': yearOfStudy,
+    });
 
-      final token = response.data['token'];
-      final userData = response.data['user'];
+    final token = response.data['token'];
+    final userData = response.data['user'];
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
 
-      return UserModel.fromJson(userData);
-    } catch (e) {
-      rethrow;
-    }
+    return UserModel.fromJson(userData);
   }
 
   Future<void> forgotPassword(String email) async {
-    try {
-      await apiClient.dio.post('accounts/auth/password/reset/', data: {'email': email});
-    } catch (e) {
-      rethrow;
-    }
+    await apiClient.dio.post('accounts/auth/password/reset/', data: {'email': email});
   }
 
   Future<void> logout() async {
@@ -69,12 +57,8 @@ class AuthRepository {
   }
 
   Future<UserModel> fetchProfile() async {
-    try {
-      final response = await apiClient.dio.get('accounts/auth/profile/');
-      return UserModel.fromJson(response.data);
-    } catch (e) {
-      rethrow;
-    }
+    final response = await apiClient.dio.get('accounts/auth/profile/');
+    return UserModel.fromJson(response.data);
   }
 
   Future<UserModel> updateProfile({
@@ -84,18 +68,14 @@ class AuthRepository {
     required String department,
     required int yearOfStudy,
   }) async {
-    try {
-      final response = await apiClient.dio.patch('accounts/auth/profile/update/', data: {
-        'full_name': fullName,
-        'admission_number': admissionNumber,
-        'course': course,
-        'department': department,
-        'year_of_study': yearOfStudy,
-      });
+    final response = await apiClient.dio.patch('accounts/auth/profile/update/', data: {
+      'full_name': fullName,
+      'admission_number': admissionNumber,
+      'course': course,
+      'department': department,
+      'year_of_study': yearOfStudy,
+    });
 
-      return UserModel.fromJson(response.data);
-    } catch (e) {
-      rethrow;
-    }
+    return UserModel.fromJson(response.data);
   }
 }

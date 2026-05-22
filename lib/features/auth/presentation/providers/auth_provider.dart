@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/auth_repository.dart';
 import '../../domain/models/user_model.dart';
@@ -9,13 +10,31 @@ class AuthState {
 
   AuthState({this.user, this.isLoading = false, this.error});
 
-  AuthState copyWith({UserModel? user, bool? isLoading, String? error}) {
+  AuthState copyWith({
+    UserModel? user,
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+  }) {
     return AuthState(
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
+}
+
+String _extractErrorMessage(Object e) {
+  if (e is DioException) {
+    final data = e.response?.data;
+    if (data is Map) {
+      return data['detail']?.toString() ??
+          data['message']?.toString() ??
+          data.values.first.toString();
+    }
+    return e.message ?? 'Network error. Please try again.';
+  }
+  return e.toString();
 }
 
 class AuthNotifier extends Notifier<AuthState> {
@@ -27,7 +46,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> checkAuth() async {
     final repository = ref.read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await repository.fetchProfile();
       state = AuthState(user: user, isLoading: false);
@@ -38,12 +57,12 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> login(String email, String password) async {
     final repository = ref.read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await repository.login(email, password);
-      state = state.copyWith(user: user, isLoading: false);
+      state = AuthState(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      state = AuthState(isLoading: false, error: _extractErrorMessage(e));
     }
   }
 
@@ -57,7 +76,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required int yearOfStudy,
   }) async {
     final repository = ref.read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await repository.register(
         fullName: fullName,
@@ -68,9 +87,9 @@ class AuthNotifier extends Notifier<AuthState> {
         department: department,
         yearOfStudy: yearOfStudy,
       );
-      state = state.copyWith(user: user, isLoading: false);
+      state = AuthState(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      state = AuthState(isLoading: false, error: _extractErrorMessage(e));
     }
   }
 
@@ -87,7 +106,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String department,
     required int yearOfStudy,
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final repository = ref.read(authRepositoryProvider);
       final user = await repository.updateProfile(
@@ -99,7 +118,7 @@ class AuthNotifier extends Notifier<AuthState> {
       );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      state = state.copyWith(error: _extractErrorMessage(e), isLoading: false);
     }
   }
 }

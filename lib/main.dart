@@ -28,6 +28,7 @@ class SmartApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final router = createRouter(ref);
 
     return MaterialApp.router(
       title: 'Smart Timetable',
@@ -35,7 +36,7 @@ class SmartApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      routerConfig: appRouter,
+      routerConfig: router,
     );
   }
 }
