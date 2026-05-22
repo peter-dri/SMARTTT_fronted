@@ -27,14 +27,15 @@ class _AuthTextFieldState extends State<AuthTextField> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: AppTheme.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: AppTheme.borderDark),
       ),
       child: TextField(
         controller: widget.controller,
         obscureText: widget.isPassword ? _obscureText : false,
-        style: const TextStyle(color: AppTheme.textPrimary),
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
         decoration: InputDecoration(
           prefixIcon: Icon(widget.icon, color: AppTheme.textSecondary, size: 20),
           suffixIcon: widget.isPassword
@@ -52,7 +53,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
                 )
               : null,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(color: AppTheme.textSecondary),
+          hintStyle: const TextStyle(color: Colors.white70),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: OutlineInputBorder(

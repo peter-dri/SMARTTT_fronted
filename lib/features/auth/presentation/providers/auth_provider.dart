@@ -25,6 +25,8 @@ class AuthState {
 }
 
 String _extractErrorMessage(Object e) {
+  // Repository already converts DioException → Exception with a clean message.
+  // But handle raw DioException as a fallback just in case.
   if (e is DioException) {
     final data = e.response?.data;
     if (data is Map) {
@@ -34,7 +36,9 @@ String _extractErrorMessage(Object e) {
     }
     return e.message ?? 'Network error. Please try again.';
   }
-  return e.toString();
+  // Strip the "Exception: " prefix added by Dart's Exception.toString()
+  final msg = e.toString();
+  return msg.startsWith('Exception: ') ? msg.substring(11) : msg;
 }
 
 class AuthNotifier extends Notifier<AuthState> {
