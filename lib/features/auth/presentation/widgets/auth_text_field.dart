@@ -25,24 +25,33 @@ class _AuthTextFieldState extends State<AuthTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    final backgroundColor = isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight;
+    final borderColor = isDark ? AppTheme.borderDark : AppTheme.borderLight;
+    final textColor = isDark ? Colors.white : AppTheme.textPrimaryLight;
+    final hintColor = isDark ? Colors.white70 : AppTheme.textSecondaryLight;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surfaceDark,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: borderColor),
       ),
       child: TextField(
         controller: widget.controller,
         obscureText: widget.isPassword ? _obscureText : false,
-        style: const TextStyle(color: Colors.white),
-        cursorColor: Colors.white,
+        style: TextStyle(color: textColor),
+        cursorColor: theme.colorScheme.primary,
         decoration: InputDecoration(
-          prefixIcon: Icon(widget.icon, color: AppTheme.textSecondary, size: 20),
+          filled: false,
+          prefixIcon: Icon(widget.icon, color: hintColor, size: 20),
           suffixIcon: widget.isPassword
               ? IconButton(
                   icon: Icon(
                     _obscureText ? Iconsax.eye : Iconsax.eye_slash,
-                    color: AppTheme.textSecondary,
+                    color: hintColor,
                     size: 20,
                   ),
                   onPressed: () {
@@ -53,12 +62,12 @@ class _AuthTextFieldState extends State<AuthTextField> {
                 )
               : null,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(color: Colors.white70),
+          hintStyle: TextStyle(color: hintColor),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
+            borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         ),

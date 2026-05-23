@@ -42,27 +42,28 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textStyleColor = AppTheme.getTextPrimary(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: AppTheme.getSurface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.border),
+          border: Border.all(color: AppTheme.getBorder(context)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: AppTheme.textPrimary),
+            Icon(icon, size: 20, color: textStyleColor),
             const SizedBox(width: 10),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: AppTheme.textPrimary,
+                color: textStyleColor,
               ),
             ),
           ],

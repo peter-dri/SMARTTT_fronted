@@ -26,6 +26,11 @@ class AuthRouterNotifier extends ChangeNotifier {
 /// Provider for the router notifier so we can pass Ref to it.
 final authRouterNotifierProvider = Provider((ref) => AuthRouterNotifier(ref));
 
+/// Provider for the GoRouter instance.
+final routerProvider = Provider<GoRouter>((ref) {
+  return createRouter(ref);
+});
+
 GoRouter createRouter(Ref ref) {
   final notifier = ref.read(authRouterNotifierProvider);
 

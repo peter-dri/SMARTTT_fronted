@@ -43,7 +43,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
      });
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.getBackground(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -133,20 +133,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               
               Row(
                 children: [
-                  Expanded(child: Divider(color: AppTheme.border)),
+                  Expanded(child: Divider(color: AppTheme.getBorder(context))),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'OR CONTINUE WITH',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: AppTheme.border)),
+                  Expanded(child: Divider(color: AppTheme.getBorder(context))),
                 ],
               ).animate().fadeIn(delay: 800.ms),
               
@@ -160,9 +160,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Don\'t have an account?',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(color: AppTheme.getTextSecondary(context)),
                     ),
                     TextButton(
                       onPressed: () => context.pushNamed('register'),
@@ -180,20 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               
                const SizedBox(height: 20),
                
-               // Bypass button for development/testing
-               Center(
-                 child: TextButton(
-                   onPressed: () => context.go('/home?bypass=true'),
-                   child: const Text(
-                     'Skip to Home (Dev Bypass)',
-                     style: TextStyle(
-                       color: Colors.grey,
-                       fontSize: 12,
-                       decoration: TextDecoration.underline,
-                     ),
-                   ),
-                 ),
-               ),
+              
              ],
           ),
         ),

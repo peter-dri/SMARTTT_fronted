@@ -19,9 +19,9 @@ class QuickActions extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: AppTheme.getSurface(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: AppTheme.getBorder(context)),
       ),
       child: GridView.builder(
         shrinkWrap: true,

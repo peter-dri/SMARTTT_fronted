@@ -55,7 +55,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
      });
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.getBackground(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -65,11 +65,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 20),
               IconButton(
                 onPressed: () => context.pop(),
-                icon: const Icon(Iconsax.arrow_left_2, color: AppTheme.textPrimary),
+                icon: Icon(Iconsax.arrow_left_2, color: AppTheme.getTextPrimary(context)),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppTheme.surface,
+                  backgroundColor: AppTheme.getSurface(context),
                   padding: const EdgeInsets.all(12),
-                  side: const BorderSide(color: AppTheme.border),
+                  side: BorderSide(color: AppTheme.getBorder(context)),
                 ),
               ),
               
@@ -181,20 +181,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               
               Row(
                 children: [
-                  Expanded(child: Divider(color: AppTheme.border)),
+                  Expanded(child: Divider(color: AppTheme.getBorder(context))),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'OR REGISTER WITH',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: AppTheme.border)),
+                  Expanded(child: Divider(color: AppTheme.getBorder(context))),
                 ],
               ).animate().fadeIn(delay: 700.ms),
               
@@ -208,9 +208,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Already have an account?',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(color: AppTheme.getTextSecondary(context)),
                     ),
                     TextButton(
                       onPressed: () => context.pop(),

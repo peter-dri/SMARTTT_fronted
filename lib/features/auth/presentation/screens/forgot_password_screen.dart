@@ -12,7 +12,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.getBackground(context),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -22,11 +22,11 @@ class ForgotPasswordScreen extends StatelessWidget {
               const SizedBox(height: 20),
               IconButton(
                 onPressed: () => context.pop(),
-                icon: const Icon(Iconsax.arrow_left_2, color: AppTheme.textPrimary),
+                icon: Icon(Iconsax.arrow_left_2, color: AppTheme.getTextPrimary(context)),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppTheme.surface,
+                  backgroundColor: AppTheme.getSurface(context),
                   padding: const EdgeInsets.all(12),
-                  side: const BorderSide(color: AppTheme.border),
+                  side: BorderSide(color: AppTheme.getBorder(context)),
                 ),
               ),
               
@@ -69,10 +69,10 @@ class ForgotPasswordScreen extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: () => context.pop(),
-                  child: const Text(
+                  child: Text(
                     'Remember password? Sign In',
                     style: TextStyle(
-                      color: AppTheme.textSecondary,
+                      color: AppTheme.getTextSecondary(context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

@@ -28,8 +28,8 @@ class TimetableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final opacity = isCompleted ? 0.5 : 1.0;
-    final borderColor = isCurrent ? color : AppTheme.border;
-    final bgColor = isBreak ? color.withOpacity(0.1) : AppTheme.surface;
+    final borderColor = isCurrent ? color : AppTheme.getBorder(context);
+    final bgColor = isBreak ? color.withOpacity(0.1) : AppTheme.getSurface(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -77,7 +77,7 @@ class TimetableCard extends StatelessWidget {
                           subject,
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: isBreak ? Colors.grey : AppTheme.textPrimary,
+                                color: isBreak ? Colors.grey : AppTheme.getTextPrimary(context),
                               ),
                         ),
                       ),
@@ -105,7 +105,7 @@ class TimetableCard extends StatelessWidget {
                   if (instructor.isNotEmpty)
                     Row(
                       children: [
-                        const Icon(Iconsax.user, size: 14, color: AppTheme.textSecondary),
+                        Icon(Iconsax.user, size: 14, color: AppTheme.getTextSecondary(context)),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
@@ -119,7 +119,7 @@ class TimetableCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      const Icon(Iconsax.location, size: 14, color: AppTheme.textSecondary),
+                      Icon(Iconsax.location, size: 14, color: AppTheme.getTextSecondary(context)),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -137,7 +137,7 @@ class TimetableCard extends StatelessWidget {
             if (!isBreak)
               IconButton(
                 onPressed: () {},
-                icon: const Icon(Iconsax.arrow_right_3, color: AppTheme.textSecondary),
+                icon: Icon(Iconsax.arrow_right_3, color: AppTheme.getTextSecondary(context)),
               ),
           ],
         ),
