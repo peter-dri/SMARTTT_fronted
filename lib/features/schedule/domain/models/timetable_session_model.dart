@@ -1,5 +1,5 @@
 class TimetableSessionModel {
-  final int id;
+  final String id;
   final String unitCode;
   final String unitTitle;
   final int unitCreditHours;
@@ -41,7 +41,7 @@ class TimetableSessionModel {
 
   factory TimetableSessionModel.fromJson(Map<String, dynamic> json) {
     return TimetableSessionModel(
-      id: json['id'],
+      id: json['id'].toString(),
       unitCode: json['unit_code'] ?? '',
       unitTitle: json['unit_title'] ?? '',
       unitCreditHours: json['unit_credit_hours'] ?? 0,

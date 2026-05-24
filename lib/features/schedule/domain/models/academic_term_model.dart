@@ -1,5 +1,5 @@
 class AcademicTermModel {
-  final int id;
+  final String id;
   final String academicYear;
   final int semester;
   final String startDate;
@@ -17,7 +17,7 @@ class AcademicTermModel {
 
   factory AcademicTermModel.fromJson(Map<String, dynamic> json) {
     return AcademicTermModel(
-      id: json['id'],
+      id: json['id'].toString(),
       academicYear: json['academic_year'],
       semester: json['semester'],
       startDate: json['start_date'],

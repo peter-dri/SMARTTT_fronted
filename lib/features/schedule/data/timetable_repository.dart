@@ -54,4 +54,20 @@ class TimetableRepository {
       rethrow;
     }
   }
+
+  Future<void> syncRegisteredUnits(List<String> unitCodes) async {
+    try {
+      dev.log('Syncing registered units: $unitCodes', name: 'TimetableRepository');
+      await apiClient.dio.post(
+        'enrollments/student-enrollments/sync/',
+        data: {
+          'unit_codes': unitCodes,
+        },
+      );
+    } catch (e, stack) {
+      dev.log('Error syncing registered units', error: e, stackTrace: stack, name: 'TimetableRepository');
+      rethrow;
+    }
+  }
 }
+

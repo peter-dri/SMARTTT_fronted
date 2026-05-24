@@ -91,6 +91,13 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Iconsax.refresh, color: AppTheme.getTextPrimary(context)),
+            tooltip: 'Sync with Portal',
+            onPressed: () => context.push('/portal-sync'),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(
