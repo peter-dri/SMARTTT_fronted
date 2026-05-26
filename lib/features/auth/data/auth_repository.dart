@@ -22,16 +22,17 @@ class AuthRepository {
       return UserModel.fromJson(userData);
     } catch (e) {
       if (e is DioException) {
+        final status = e.response?.statusCode;
         final data = e.response?.data;
         if (data is Map && data.isNotEmpty) {
-          if (data.containsKey('detail')) throw Exception(data['detail'].toString());
-          if (data.containsKey('message')) throw Exception(data['message'].toString());
+          if (data.containsKey('detail')) throw Exception('(${status ?? 'unknown'}) ${data['detail'].toString()}');
+          if (data.containsKey('message')) throw Exception('(${status ?? 'unknown'}) ${data['message'].toString()}');
           // Flatten field errors like {"email": ["..."]}
           final first = data.values.first;
-          if (first is List && first.isNotEmpty) throw Exception(first.first.toString());
-          throw Exception(data.toString());
+          if (first is List && first.isNotEmpty) throw Exception('(${status ?? 'unknown'}) ${first.first.toString()}');
+          throw Exception('(${status ?? 'unknown'}) ${data.toString()}');
         }
-        throw Exception(e.message ?? 'Network error');
+        throw Exception('(${status ?? 'unknown'}) ${e.message ?? 'Network error'}');
       }
       rethrow;
     }

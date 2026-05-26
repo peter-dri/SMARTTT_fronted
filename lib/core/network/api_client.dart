@@ -27,6 +27,8 @@ class ApiClient {
         },
       ),
     );
+    // Add logging for requests and responses to aid debugging (can be removed in production)
+    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true, requestHeader: false, responseHeader: false));
   }
 }
 
